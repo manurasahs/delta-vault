@@ -1,14 +1,20 @@
 [versions]
 
 spring-boot = "3.5.4"
+openapi-generator = "7.14.0"
 
 [bundles]
 
 [plugins]
+
 springframework-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
 spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
+openapi-generator = { id = "org.openapi.generator", version.ref = "openapi-generator" }
 
 [libraries]
 
 spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
-spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
+spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+jakarta-annotation-api = { module = "jakarta.annotation:jakarta.annotation-api" }
+jakarta-validation-api = { module = "jakarta.validation:jakarta.validation-api" }
+jackson-databind-nullable = { module = "org.openapitools:jackson-databind-nullable", version = "0.2.6" }

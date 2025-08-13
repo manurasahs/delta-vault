@@ -1,9 +1,11 @@
 import org.springframework.boot.gradle.tasks.bundling.BootJar
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
     java
     alias(libs.plugins.springframework.boot)
     alias(libs.plugins.spring.dependency.management)
+    alias(libs.plugins.openapi.generator)
 }
 
 group = "io.manurasahs.deltavault"
@@ -18,7 +20,11 @@ val additionalJavaOpts = strProperty("additionalJavaOpts")
 
 dependencies {
     implementation(platform(libs.spring.boot.bom))
-    implementation(libs.spring.boot.starter)
+    implementation(libs.spring.boot.starter.web)
+
+    implementation(libs.jakarta.annotation.api)
+    implementation(libs.jakarta.validation.api)
+    implementation(libs.jackson.databind.nullable)
 }
 
 springBoot {
@@ -61,11 +67,58 @@ tasks {
 
     compileJava {
         options.compilerArgs.add(additionalJavaOpts)
+        dependsOn(generatePublicApi)
+    }
+
+    processResources {
+        dependsOn(generatePublicApi)
+    }
+    processTestResources {
+        dependsOn(generatePublicApi)
     }
 
     withType(JavaExec::class) {
         jvmArgs = listOf(additionalJavaOpts)
     }
+}
+
+fun setupGenerateTaskDefaultFields(task: GenerateTask) {
+    task.group = "openapi"
+    task.generatorName.set("spring")
+    task.generateApiDocumentation.set(false)
+    task.generateApiTests.set(false)
+    task.generateModelDocumentation.set(false)
+    task.generateModelTests.set(false)
+    task.skipOverwrite.set(false)
+
+    task.configOptions.put("library", "spring-boot")
+    task.configOptions.put("dateLibrary", "java8")
+    task.configOptions.put("delegatePattern", "false")
+    task.configOptions.put("interfaceOnly", "true")
+    task.configOptions.put("hideGenerationTimestamp", "true")
+    task.configOptions.put("sourceFolder", "src/main/java")
+    task.configOptions.put("useTags", "true")
+    task.configOptions.put("useBeanValidation", "true")
+    task.configOptions.put("performBeanValidation", "false")
+    task.configOptions.put("openApiNullable", "true")
+    task.configOptions.put("legacyDiscriminatorBehavior", "false")
+    task.configOptions.put("documentationProvider", "none")
+    task.configOptions.put("annotationLibrary", "none")
+    task.configOptions.put("useSpringBoot3", "true")
+    task.configOptions.put("useOneOfInterfaces", "true")
+    task.configOptions.put("skipDefaultInterface", "true")
+    task.typeMappings.put("OffsetDateTime", "java.time.LocalDateTime")
+    task.typeMappings.put("Double", "java.math.BigDecimal")
+    task.typeMappings.put("UUID", "java.lang.String")
+}
+
+val generatePublicApi by tasks.registering(GenerateTask::class) {
+    setupGenerateTaskDefaultFields(this)
+    inputSpec.set("$rootDir/../specification/openapi/client-rest-api.yml")
+    outputDir.set("$rootDir")
+    apiPackage.set("io.manurasahs.deltavault.port.adapter.clientrest.resources.api")
+    invokerPackage.set("io.manurasahs.deltavault.port.adapter.clientrest.resources.invoker")
+    modelPackage.set("io.manurasahs.deltavault.port.adapter.clientrest.resources.model")
 }
 
 java {

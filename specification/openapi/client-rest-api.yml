@@ -1,0 +1,128 @@
+openapi: 3.0.2
+info:
+  title: Delta Vault public API
+  description: Public API
+  version: 0.0.1
+paths:
+  /api/v1/files/{fileName}:
+    put:
+      tags:
+        - FileStorage
+      summary: Upsert JSON file.
+      operationId: upsertFile
+      parameters:
+        - $ref: '#/components/parameters/fileNameQueryParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JsonDocument'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimpleInfoMessage'
+        400:
+          $ref: '#/components/responses/badRequest'
+    get:
+      tags:
+        - FileStorage
+      summary: Get JSON file at a specific version.
+      parameters:
+        - $ref: '#/components/parameters/fileNameQueryParam'
+        - in: query
+          name: version
+          schema:
+            type: string
+            default: latest
+      responses:
+        200:
+          description: JSON at requested version.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonDocument'
+        400:
+          $ref: '#/components/responses/badRequest'
+        404:
+          $ref: '#/components/responses/badRequest'
+
+  /api/v1/files/{fileName}/history:
+    get:
+      tags:
+        - FileHistory
+      summary: Get JSON file updates changelog.
+      parameters:
+        - $ref: '#/components/parameters/fileNameQueryParam'
+      responses:
+        200:
+          description: JSON at requested version.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionsList'
+        400:
+          $ref: '#/components/responses/badRequest'
+        404:
+          $ref: '#/components/responses/badRequest'
+
+components:
+  schemas:
+    JsonDocument:
+      type: object
+      additionalProperties: true
+      description: Arbitrary JSON object to store as a version.
+
+    VersionInfo:
+      type: object
+      required:
+        - version
+        - createdAt
+      properties:
+        version:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+
+    VersionsList:
+      type: object
+      required:
+        - fileName
+        - versions
+      properties:
+        fileName:
+          type: string
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionInfo'
+
+    SimpleInfoMessage:
+      type: object
+      required:
+        - info
+      properties:
+        info:
+          type: string
+          description: Simple information message.
+
+  parameters:
+    fileNameQueryParam:
+      in: path
+      name: fileName
+      required: true
+      schema:
+        type: string
+      description: File name.
+
+  responses:
+    badRequest:
+      description: Bad request (4xx)
+      content:
+        application/problem+json:
+          schema:
+            $ref: 'problem-details.yml#/components/schemas/InputValidationProblem'
