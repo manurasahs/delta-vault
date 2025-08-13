@@ -1,1 +1,4 @@
 /.idea/
+/backend/.gradle/
+/backend/build/
+/backend.iml
