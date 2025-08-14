@@ -1,0 +1,29 @@
+{
+  "properties": [
+    {
+      "name": "deltavault.s3.endpoint",
+      "type": "java.lang.String",
+      "description": "Description for deltavault.s3.endpoint."
+    },
+    {
+      "name": "deltavault.s3.region",
+      "type": "java.lang.String",
+      "description": "Description for deltavault.s3.region."
+    },
+    {
+      "name": "deltavault.s3.accessKey",
+      "type": "java.lang.String",
+      "description": "Description for deltavault.s3.accessKey."
+    },
+    {
+      "name": "deltavault.s3.secretKey",
+      "type": "java.lang.String",
+      "description": "Description for deltavault.s3.secretKey."
+    },
+    {
+      "name": "deltavault.s3.pathStyle",
+      "type": "java.lang.Boolean",
+      "description": "Description for deltavault.s3.pathStyle."
+    }
+  ]
+}

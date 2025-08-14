@@ -43,7 +43,7 @@ public interface FileStorageApi {
         produces = { "application/json", "application/problem+json" }
     )
     
-    ResponseEntity<Map<String, Object>> apiV1FilesFileNameGet(
+    ResponseEntity<Map<String, Object>> downloadFile(
          @PathVariable("fileName") String fileName,
          @Valid @RequestParam(value = "version", required = false, defaultValue = "latest") String version
     );

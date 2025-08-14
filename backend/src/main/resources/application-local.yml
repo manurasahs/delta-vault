@@ -4,5 +4,8 @@ server:
 
 deltavault:
   s3:
+    endpoint: http://localhost:4566
     region: us-east-1
-    pathStyle: false
+    accessKey: test
+    secretKey: test
+    pathStyle: true
