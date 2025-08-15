@@ -1,5 +1,9 @@
+import org.gradle.kotlin.dsl.named
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+import org.springframework.boot.gradle.tasks.run.BootRun
+import java.util.Properties
+import kotlin.collections.putAll
 
 plugins {
     java
@@ -25,6 +29,7 @@ dependencies {
     implementation(libs.jakarta.annotation.api)
     implementation(libs.jakarta.validation.api)
     implementation(libs.jackson.databind.nullable)
+    implementation(libs.software.amazon.awssdk)
 }
 
 springBoot {
@@ -32,6 +37,19 @@ springBoot {
 }
 
 fun strProperty(name: String): String = property(name).toString()
+
+val props = Properties()
+file("$rootDir/.env").takeIf { it.canRead() }?.inputStream()?.use { stream ->
+    props.load(stream)
+}
+
+val customizedEnvironment = mutableMapOf<String, Any>()
+customizedEnvironment.putAll(props.map { it.key.toString() to it.value.toString() })
+customizedEnvironment.putAll(System.getenv())
+
+tasks.named<BootRun>("bootRun") {
+    environment.putAll(customizedEnvironment)
+}
 
 val bootJarExplode by tasks.registering(Copy::class) {
     dependsOn(tasks.named("bootJar"))

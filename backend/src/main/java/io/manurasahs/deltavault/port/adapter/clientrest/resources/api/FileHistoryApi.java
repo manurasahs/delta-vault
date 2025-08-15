@@ -41,7 +41,7 @@ public interface FileHistoryApi {
         produces = { "application/json", "application/problem+json" }
     )
     
-    ResponseEntity<VersionsList> apiV1FilesFileNameHistoryGet(
+    ResponseEntity<VersionsList> getFileHistory(
          @PathVariable("fileName") String fileName
     );
 

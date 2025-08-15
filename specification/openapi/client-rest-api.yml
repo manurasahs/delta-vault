@@ -31,6 +31,7 @@ paths:
       tags:
         - FileStorage
       summary: Get JSON file at a specific version.
+      operationId: downloadFile
       parameters:
         - $ref: '#/components/parameters/fileNameQueryParam'
         - in: query
@@ -55,6 +56,7 @@ paths:
       tags:
         - FileHistory
       summary: Get JSON file updates changelog.
+      operationId: getFileHistory
       parameters:
         - $ref: '#/components/parameters/fileNameQueryParam'
       responses:

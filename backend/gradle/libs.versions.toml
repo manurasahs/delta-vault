@@ -2,6 +2,7 @@
 
 spring-boot = "3.5.4"
 openapi-generator = "7.14.0"
+aws-sdk = "2.32.20"
 
 [bundles]
 
@@ -18,3 +19,4 @@ spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-start
 jakarta-annotation-api = { module = "jakarta.annotation:jakarta.annotation-api" }
 jakarta-validation-api = { module = "jakarta.validation:jakarta.validation-api" }
 jackson-databind-nullable = { module = "org.openapitools:jackson-databind-nullable", version = "0.2.6" }
+software-amazon-awssdk = { module = "software.amazon.awssdk:s3", version.ref = "aws-sdk"}
