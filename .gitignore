@@ -4,3 +4,4 @@
 /backend.iml
 /backend/.openapi-generator/
 /backend/.env
+/localstack/data/

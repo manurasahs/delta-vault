@@ -6,3 +6,5 @@ deltavault:
   s3:
     region: us-east-1
     pathStyle: false
+  dynamo:
+    region: us-east-1

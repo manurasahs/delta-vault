@@ -19,4 +19,5 @@ spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-start
 jakarta-annotation-api = { module = "jakarta.annotation:jakarta.annotation-api" }
 jakarta-validation-api = { module = "jakarta.validation:jakarta.validation-api" }
 jackson-databind-nullable = { module = "org.openapitools:jackson-databind-nullable", version = "0.2.6" }
-software-amazon-awssdk = { module = "software.amazon.awssdk:s3", version.ref = "aws-sdk"}
+software-amazon-awssdk-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws-sdk"}
+software-amazon-awssdk-dynamo = { module = "software.amazon.awssdk:dynamodb", version.ref = "aws-sdk"}

@@ -29,7 +29,8 @@ dependencies {
     implementation(libs.jakarta.annotation.api)
     implementation(libs.jakarta.validation.api)
     implementation(libs.jackson.databind.nullable)
-    implementation(libs.software.amazon.awssdk)
+    implementation(libs.software.amazon.awssdk.s3)
+    implementation(libs.software.amazon.awssdk.dynamo)
 }
 
 springBoot {
