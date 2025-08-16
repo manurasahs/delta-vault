@@ -76,6 +76,7 @@ configurations["integTestRuntimeOnly"].extendsFrom(configurations["testRuntimeOn
 
 dependencies {
     implementation(platform(libs.spring.boot.bom))
+    implementation(platform(libs.amazon.awssdk.bom))
     implementation(platform(libs.testcontainers.bom))
 
     implementation(libs.spring.boot.starter.web)
@@ -85,6 +86,7 @@ dependencies {
     implementation(libs.software.amazon.awssdk.s3)
     implementation(libs.software.amazon.awssdk.dynamo)
     implementation(libs.com.flipkart.zjsonpatch)
+    implementation(libs.apache.commons.codec)
 }
 
 springBoot {

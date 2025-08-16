@@ -21,17 +21,19 @@ jvm-test-suite = { id = "jvm-test-suite" }
 [libraries]
 
 testcontainers-bom = { module = "org.testcontainers:testcontainers-bom", version.ref = "testcontainers" }
-
+amazon-awssdk-bom = { module = "software.amazon.awssdk:bom", version.ref = "aws-sdk" }
 spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
 jakarta-annotation-api = { module = "jakarta.annotation:jakarta.annotation-api" }
 jakarta-validation-api = { module = "jakarta.validation:jakarta.validation-api" }
 jackson-databind-nullable = { module = "org.openapitools:jackson-databind-nullable", version.ref = "jackson" }
-software-amazon-awssdk-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws-sdk"}
-software-amazon-awssdk-dynamo = { module = "software.amazon.awssdk:dynamodb", version.ref = "aws-sdk"}
+software-amazon-awssdk-s3 = { module = "software.amazon.awssdk:s3"}
+software-amazon-awssdk-dynamo = { module = "software.amazon.awssdk:dynamodb-enhanced"}
 com-flipkart-zjsonpatch = { module = "com.flipkart.zjsonpatch:zjsonpatch", version.ref = "zjsonpatch"}
 archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 testcontainers = { module = "org.testcontainers:testcontainers" }
 testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter" }
+apache-commons-codec = { module = "commons-codec:commons-codec", version = "1.19.0"}

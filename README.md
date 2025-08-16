@@ -10,3 +10,6 @@ future improvements:
 - encrypt data
 - Integration LocalStack/Testcontainers (S3 + Dynamo).
 - Bench: full-only vs full+delta
+- think about transactions and data integrity
+- think about other file types
+- think about options how to crete dynamo table

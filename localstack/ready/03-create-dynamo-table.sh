@@ -13,10 +13,10 @@ else
   aws --endpoint-url="$EP" dynamodb create-table \
     --table-name "$TABLE" \
     --attribute-definitions \
-      AttributeName=fileId,AttributeType=S \
+      AttributeName=fileName,AttributeType=S \
       AttributeName=version,AttributeType=N \
     --key-schema \
-      AttributeName=fileId,KeyType=HASH \
+      AttributeName=fileName,KeyType=HASH \
       AttributeName=version,KeyType=RANGE \
     --billing-mode PAY_PER_REQUEST \
     --region "$REGION"
