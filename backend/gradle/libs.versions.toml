@@ -3,6 +3,11 @@
 spring-boot = "3.5.4"
 openapi-generator = "7.14.0"
 aws-sdk = "2.32.20"
+zjsonpatch = "0.4.16"
+jackson = "0.2.6"
+archunit = "1.4.1"
+junit-jupiter = "5.13.4"
+testcontainers = "1.21.3"
 
 [bundles]
 
@@ -11,13 +16,22 @@ aws-sdk = "2.32.20"
 springframework-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
 spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
 openapi-generator = { id = "org.openapi.generator", version.ref = "openapi-generator" }
+jvm-test-suite = { id = "jvm-test-suite" }
 
 [libraries]
+
+testcontainers-bom = { module = "org.testcontainers:testcontainers-bom", version.ref = "testcontainers" }
 
 spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
 jakarta-annotation-api = { module = "jakarta.annotation:jakarta.annotation-api" }
 jakarta-validation-api = { module = "jakarta.validation:jakarta.validation-api" }
-jackson-databind-nullable = { module = "org.openapitools:jackson-databind-nullable", version = "0.2.6" }
+jackson-databind-nullable = { module = "org.openapitools:jackson-databind-nullable", version.ref = "jackson" }
 software-amazon-awssdk-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws-sdk"}
 software-amazon-awssdk-dynamo = { module = "software.amazon.awssdk:dynamodb", version.ref = "aws-sdk"}
+com-flipkart-zjsonpatch = { module = "com.flipkart.zjsonpatch:zjsonpatch", version.ref = "zjsonpatch"}
+archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+testcontainers = { module = "org.testcontainers:testcontainers" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter" }

@@ -1,12 +1,16 @@
+@file:Suppress("UnstableApiUsage")
+
 import org.gradle.kotlin.dsl.named
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 import org.springframework.boot.gradle.tasks.run.BootRun
 import java.util.Properties
+import org.gradle.api.plugins.jvm.JvmTestSuite
 import kotlin.collections.putAll
 
 plugins {
     java
+    alias(libs.plugins.jvm.test.suite)
     alias(libs.plugins.springframework.boot)
     alias(libs.plugins.spring.dependency.management)
     alias(libs.plugins.openapi.generator)
@@ -22,15 +26,65 @@ repositories {
 val jvmTargetVersion = strProperty("jvmTargetVersion")
 val additionalJavaOpts = strProperty("additionalJavaOpts")
 
+testing {
+    suites {
+        withType<JvmTestSuite> {
+            useJUnitJupiter()
+
+            dependencies {
+                implementation.add(libs.spring.boot.starter.test)
+                implementation.add(libs.junit.jupiter)
+                implementation.add(libs.archunit.junit5)
+            }
+
+            targets {
+                all {
+                    testTask.configure {
+                        environment.putAll(customizedEnvironment)
+                    }
+                }
+            }
+        }
+
+        val test by getting(JvmTestSuite::class) {}
+
+        @Suppress("unused")
+        val integTest by registering(JvmTestSuite::class) {
+
+            dependencies {
+                implementation.add(project())
+                implementation.add(libs.testcontainers)
+                implementation.add(libs.testcontainers.junit.jupiter)
+
+                implementation.add(libs.spring.boot.starter.test)
+                implementation.add(libs.junit.jupiter)
+            }
+
+            targets {
+                all {
+                    testTask.configure {
+                        shouldRunAfter(test)
+                    }
+                }
+            }
+        }
+    }
+}
+
+configurations["integTestImplementation"].extendsFrom(configurations["testImplementation"])
+configurations["integTestRuntimeOnly"].extendsFrom(configurations["testRuntimeOnly"])
+
 dependencies {
     implementation(platform(libs.spring.boot.bom))
-    implementation(libs.spring.boot.starter.web)
+    implementation(platform(libs.testcontainers.bom))
 
+    implementation(libs.spring.boot.starter.web)
     implementation(libs.jakarta.annotation.api)
     implementation(libs.jakarta.validation.api)
     implementation(libs.jackson.databind.nullable)
     implementation(libs.software.amazon.awssdk.s3)
     implementation(libs.software.amazon.awssdk.dynamo)
+    implementation(libs.com.flipkart.zjsonpatch)
 }
 
 springBoot {
@@ -80,6 +134,10 @@ tasks {
         dependsOn(bootJarExplode)
     }
 
+    named<Copy>("processIntegTestResources") {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+
     named<Copy>("processTestResources") {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
@@ -93,6 +151,9 @@ tasks {
         dependsOn(generatePublicApi)
     }
     processTestResources {
+        dependsOn(generatePublicApi)
+    }
+    named("processIntegTestResources") {
         dependsOn(generatePublicApi)
     }
 
