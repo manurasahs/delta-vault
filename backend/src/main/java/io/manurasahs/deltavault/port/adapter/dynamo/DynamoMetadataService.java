@@ -3,6 +3,7 @@ package io.manurasahs.deltavault.port.adapter.dynamo;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import io.manurasahs.deltavault.application.MetadataService;
@@ -42,6 +43,46 @@ public class DynamoMetadataService implements MetadataService
                     )
                     .scanIndexForward(false)
                     .limit(1)
+            ).stream()
+            .map(Page::items)
+            .flatMap(Collection::stream)
+            .findFirst();
+    }
+
+    @Override
+    @Nonnull
+    public List<FileMetadata> getLastMetadataDeltas(@Nonnull FileMetadata lastFullFileMetadata)
+    {
+        requireNonNull(lastFullFileMetadata);
+
+        return this.fileMetadataTable.query(
+                r -> r.queryConditional(QueryConditional.sortGreaterThan(
+                        Key.builder()
+                            .partitionValue(lastFullFileMetadata.fileName())
+                            .sortValue(lastFullFileMetadata.version())
+                            .build()
+                    ))
+                    .scanIndexForward(false)
+            ).stream()
+            .map(Page::items)
+            .flatMap(Collection::stream)
+            .toList();
+    }
+
+    @Override
+    @Nonnull
+    public Optional<FileMetadata> getLastFullFileMetadata(@Nonnull String fileName)
+    {
+        requireNonNull(fileName);
+
+        return this.fileMetadataTable.index("GSI1")
+            .query(
+                r -> r.queryConditional(QueryConditional.keyEqualTo(
+                        Key.builder().partitionValue(fileName).build()
+                    ))
+                    .scanIndexForward(false)
+                    .limit(1)
+                    .filterExpression(null)
             ).stream()
             .map(Page::items)
             .flatMap(Collection::stream)

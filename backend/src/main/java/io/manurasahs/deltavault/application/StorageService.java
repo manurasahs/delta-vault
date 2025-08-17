@@ -1,12 +1,15 @@
 package io.manurasahs.deltavault.application;
 
-import java.io.IOException;
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import jakarta.annotation.Nonnull;
 
 public interface StorageService
 {
 
-    void upload(String bucket, String key, byte[] bytes);
+    void upload(@Nonnull String fileName, @Nonnull Map<String, Object> fileContent);
 
-    byte[] download(String bucket, String key)
-        throws IOException;
+    @Nonnull
+    JsonNode download(@Nonnull String key);
 }

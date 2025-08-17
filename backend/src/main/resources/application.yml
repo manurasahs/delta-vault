@@ -6,5 +6,6 @@ deltavault:
   s3:
     region: us-east-1
     pathStyle: false
+    bucketName: my-test-bucket
   dynamo:
     region: us-east-1

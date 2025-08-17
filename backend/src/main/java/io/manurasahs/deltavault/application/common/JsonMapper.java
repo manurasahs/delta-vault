@@ -20,6 +20,18 @@ public final class JsonMapper
         this.mapper = objectMapper;
     }
 
+    public <T> byte[] serializeToBytes(@Nonnull T object)
+    {
+        try
+        {
+            return this.mapper.writeValueAsBytes(object);
+        }
+        catch (JsonProcessingException e)
+        {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
     @Nonnull
     public JsonNode readTree(@Nonnull byte[] json)
     {

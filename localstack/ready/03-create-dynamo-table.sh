@@ -15,9 +15,20 @@ else
     --attribute-definitions \
       AttributeName=fileName,AttributeType=S \
       AttributeName=version,AttributeType=N \
+      AttributeName=typeRankVersion,AttributeType=S \
     --key-schema \
       AttributeName=fileName,KeyType=HASH \
       AttributeName=version,KeyType=RANGE \
+    --global-secondary-indexes '[
+      {
+        "IndexName": "GSI1",
+        "KeySchema": [
+          {"AttributeName": "fileName", "KeyType": "HASH"},
+          {"AttributeName": "typeRankVersion", "KeyType": "RANGE"}
+        ],
+        "Projection": {"ProjectionType": "KEYS_ONLY"}
+      }
+    ]' \
     --billing-mode PAY_PER_REQUEST \
     --region "$REGION"
   echo " - Created"

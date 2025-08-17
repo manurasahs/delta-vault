@@ -5,13 +5,16 @@ import static java.util.Objects.requireNonNull;
 import java.time.Instant;
 
 import jakarta.annotation.Nonnull;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbIgnore;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbImmutable;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondarySortKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
 @DynamoDbImmutable(builder = FileMetadata.Builder.class)
 public record FileMetadata(
-    @DynamoDbPartitionKey @Nonnull String fileName,
+    @DynamoDbSecondaryPartitionKey(indexNames = "GSI1") @DynamoDbPartitionKey @Nonnull String fileName,
     @DynamoDbSortKey int version,
     @Nonnull Instant createdAt,
     @Nonnull MetadataType type,
@@ -20,12 +23,37 @@ public record FileMetadata(
 )
 {
 
-    public FileMetadata
+//    public FileMetadata
+//    {
+//        requireNonNull(fileName);
+//        requireNonNull(createdAt);
+//        requireNonNull(type);
+//        requireNonNull(checksum);
+//    }
+
+    @DynamoDbSecondarySortKey(indexNames = "GSI1")
+    public String getTypeRankVersion()
     {
-        requireNonNull(fileName);
-        requireNonNull(createdAt);
-        requireNonNull(type);
-        requireNonNull(checksum);
+        var versionPadded = String.format("%010d", version);
+        return STR."\{this.type.rank()}#\{versionPadded}";
+    }
+
+    @Nonnull
+    public static FileMetadata metadataForNewFile(
+        @Nonnull String fileName,
+        @Nonnull Instant createdAt,
+        @Nonnull String checksum,
+        int size
+    )
+    {
+        return new FileMetadata(fileName, 0, createdAt, MetadataType.FULL_FILE, checksum, size);
+    }
+
+    @DynamoDbIgnore
+    @Nonnull
+    public String fileKey()
+    {
+        return STR."\{fileName}/\{version}.json";
     }
 
     public FileMetadata(@Nonnull Builder builder)
@@ -94,6 +122,13 @@ public record FileMetadata(
         public Builder size(int size)
         {
             this.size = size;
+            return this;
+        }
+
+        @Nonnull
+        public Builder typeRankVersion(String ignored)
+        {
+            // no-op: derived attribute; kept for schema compatibility when reading
             return this;
         }
 
