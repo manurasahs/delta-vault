@@ -3,6 +3,7 @@ server:
   port: 8080
 
 deltavault:
+  snapshots-frequency: 5
   s3:
     region: us-east-1
     pathStyle: false

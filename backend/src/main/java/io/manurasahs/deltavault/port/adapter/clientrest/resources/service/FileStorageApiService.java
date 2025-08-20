@@ -5,7 +5,7 @@ import static org.springframework.http.ResponseEntity.ok;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.manurasahs.deltavault.application.StorageService;
+import io.manurasahs.deltavault.application.S3StorageService;
 import io.manurasahs.deltavault.application.common.JsonMapper;
 import io.manurasahs.deltavault.port.adapter.clientrest.resources.api.FileStorageApi;
 import io.manurasahs.deltavault.port.adapter.clientrest.resources.model.SimpleInfoMessage;
@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class FileStorageApiService implements FileStorageApi
 {
 
-    private final StorageService storageService;
+    private final S3StorageService s3StorageService;
 
     private final JsonMapper jsonMapper;
 
-    public FileStorageApiService(StorageService storageService, JsonMapper jsonMapper)
+    public FileStorageApiService(S3StorageService s3StorageService, JsonMapper jsonMapper)
     {
-        this.storageService = storageService;
+        this.s3StorageService = s3StorageService;
         this.jsonMapper = jsonMapper;
     }
 
@@ -31,7 +31,7 @@ public class FileStorageApiService implements FileStorageApi
     {
         return ok(
             this.jsonMapper.deserialize(
-                this.storageService.download(fileName),
+                this.s3StorageService.download(fileName),
                 new TypeReference<>() {}
             )
         );
@@ -40,7 +40,7 @@ public class FileStorageApiService implements FileStorageApi
     @Override
     public ResponseEntity<SimpleInfoMessage> upsertFile(String fileName, Map<String, Object> requestBody)
     {
-        this.storageService.upload(fileName, requestBody);
+        this.s3StorageService.upload(fileName, requestBody);
         return ok(new SimpleInfoMessage(STR."File \{fileName} uploaded successfully"));
     }
 }

@@ -1,6 +1,4 @@
-package io.manurasahs.deltavault.domain.metadata;
-
-import static java.util.Objects.requireNonNull;
+package io.manurasahs.deltavault.domain.metadata.model;
 
 import java.time.Instant;
 
@@ -19,17 +17,10 @@ public record FileMetadata(
     @Nonnull Instant createdAt,
     @Nonnull MetadataType type,
     @Nonnull String checksum,
-    int size
+    int fileSize,
+    int deltaSize
 )
 {
-
-//    public FileMetadata
-//    {
-//        requireNonNull(fileName);
-//        requireNonNull(createdAt);
-//        requireNonNull(type);
-//        requireNonNull(checksum);
-//    }
 
     @DynamoDbSecondarySortKey(indexNames = "GSI1")
     public String getTypeRankVersion()
@@ -43,10 +34,10 @@ public record FileMetadata(
         @Nonnull String fileName,
         @Nonnull Instant createdAt,
         @Nonnull String checksum,
-        int size
+        int fileSize
     )
     {
-        return new FileMetadata(fileName, 0, createdAt, MetadataType.FULL_FILE, checksum, size);
+        return new FileMetadata(fileName, 0, createdAt, MetadataType.SNAPSHOT, checksum, fileSize, fileSize);
     }
 
     @DynamoDbIgnore
@@ -58,7 +49,15 @@ public record FileMetadata(
 
     public FileMetadata(@Nonnull Builder builder)
     {
-        this(builder.fileName, builder.version, builder.createdAt, builder.type, builder.checksum, builder.size);
+        this(
+            builder.fileName,
+            builder.version,
+            builder.createdAt,
+            builder.type,
+            builder.checksum,
+            builder.fileSize,
+            builder.deltaSize
+        );
     }
 
     public static Builder builder()
@@ -79,7 +78,9 @@ public record FileMetadata(
 
         private String checksum;
 
-        private int size;
+        private int fileSize;
+
+        private int deltaSize;
 
         private Builder() {}
 
@@ -119,9 +120,16 @@ public record FileMetadata(
         }
 
         @Nonnull
-        public Builder size(int size)
+        public Builder fileSize(int fileSize)
         {
-            this.size = size;
+            this.fileSize = fileSize;
+            return this;
+        }
+
+        @Nonnull
+        public Builder deltaSize(int deltaSize)
+        {
+            this.deltaSize = deltaSize;
             return this;
         }
 

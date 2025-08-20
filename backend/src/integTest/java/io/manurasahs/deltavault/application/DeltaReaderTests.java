@@ -13,11 +13,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 // todo: create base integTest class
 @SpringBootTest
-public class DeltaServiceTests
+public class DeltaReaderTests
 {
 
     @Autowired
-    private DeltaService deltaService;
+    private DeltaReader deltaReader;
 
     @Autowired
     private JsonMapper jsonMapper;
@@ -49,7 +49,7 @@ public class DeltaServiceTests
         );
 
         // when:
-        var jsonPatch = this.deltaService.computeDuff(firstJson, secondJson);
+        var jsonPatch = this.deltaReader.computeDiff(firstJson, secondJson);
         var jsonDiff = this.jsonMapper.deserialize(jsonPatch, new TypeReference<List<Map<String, Object>>>() {});
 
         // then:

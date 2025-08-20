@@ -6,23 +6,13 @@ import java.util.Objects;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.flipkart.zjsonpatch.JsonDiff;
 import com.flipkart.zjsonpatch.JsonPatch;
-import io.manurasahs.deltavault.application.common.JsonMapper;
 import jakarta.annotation.Nonnull;
-import org.springframework.stereotype.Service;
 
-@Service
-public class DeltaService
+public class DeltaReader
 {
 
-    private final JsonMapper jsonMapper;
-
-    public DeltaService(JsonMapper jsonMapper)
-    {
-        this.jsonMapper = jsonMapper;
-    }
-
     @Nonnull
-    public JsonNode computeDuff(
+    public static JsonNode computeDiff(
         @Nonnull JsonNode oldContent,
         @Nonnull JsonNode newContent
     )
@@ -31,11 +21,10 @@ public class DeltaService
     }
 
     @Nonnull
-    public JsonNode restoreFile(@Nonnull JsonNode lastFull, @Nonnull List<byte[]> jsonDiffs)
+    public static JsonNode restoreFile(@Nonnull JsonNode lastFull, @Nonnull List<JsonNode> jsonDiffs)
     {
         return jsonDiffs.stream()
             .filter(Objects::nonNull)
-            .map(this.jsonMapper::readTree)
             .reduce(lastFull, (source, patch) -> JsonPatch.apply(patch, source));
     }
 }

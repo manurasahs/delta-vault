@@ -1,12 +1,12 @@
-package io.manurasahs.deltavault.application;
+package io.manurasahs.deltavault.domain.metadata;
 
 import java.util.List;
 import java.util.Optional;
 
-import io.manurasahs.deltavault.domain.metadata.FileMetadata;
+import io.manurasahs.deltavault.domain.metadata.model.FileMetadata;
 import jakarta.annotation.Nonnull;
 
-public interface MetadataService
+public interface MetadataRepository
 {
 
     @Nonnull

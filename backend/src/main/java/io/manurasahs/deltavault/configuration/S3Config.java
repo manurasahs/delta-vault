@@ -1,8 +1,8 @@
 package io.manurasahs.deltavault.configuration;
 
 import java.net.URI;
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -17,40 +17,46 @@ import software.amazon.awssdk.services.s3.S3Configuration;
 public class S3Config
 {
 
+    private final S3ConfigurationProperties s3ConfigurationProperties;
+
+    public S3Config(S3ConfigurationProperties s3ConfigurationProperties)
+    {
+        this.s3ConfigurationProperties = s3ConfigurationProperties;
+    }
+
     @Bean
     @Profile("local")
-    public S3Client s3ClientLocalStack(
-        @Value("${deltavault.s3.endpoint}") String endpoint,
-        @Value("${deltavault.s3.region}") String region,
-        @Value("${deltavault.s3.accessKey}") String accessKey,
-        @Value("${deltavault.s3.secretKey}") String secretKey,
-        @Value("${deltavault.s3.pathStyle:true}") boolean pathStyle
-    )
+    public S3Client s3ClientLocalStack()
     {
         return S3Client.builder()
-            .endpointOverride(URI.create(endpoint))
-            .region(Region.of(region))
-            .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey)))
+            .endpointOverride(URI.create(Optional.ofNullable(this.s3ConfigurationProperties.endpoint())
+                .orElseThrow(() -> new IllegalStateException("Incorrect configuration. Endpoint not provided."))))
+            .region(Region.of(this.s3ConfigurationProperties.region()))
+            .credentialsProvider(StaticCredentialsProvider.create(
+                AwsBasicCredentials.create(
+                    Optional.ofNullable(this.s3ConfigurationProperties.accessKey())
+                        .orElseThrow(() -> new IllegalStateException("Incorrect configuration. Access key not provided.")),
+                    Optional.ofNullable(this.s3ConfigurationProperties.secretKey())
+                        .orElseThrow(() -> new IllegalStateException("Incorrect configuration. Secret key not provided."))
+                )
+            ))
             .serviceConfiguration(S3Configuration.builder()
-                .pathStyleAccessEnabled(pathStyle)
+                .pathStyleAccessEnabled(this.s3ConfigurationProperties.pathStyle())
                 .build())
             .build();
     }
 
     @Bean
     @Profile("!local")
-    public S3Client s3ClientAws(
-        @Value("${app.s3.region}") String region,
-        @Value("${app.s3.pathStyle:false}") boolean pathStyle
-    )
+    public S3Client s3ClientAws()
     {
         return S3Client.builder()
-            .region(Region.of(region))
+            .region(Region.of(this.s3ConfigurationProperties.region()))
             // todo configure real connection
             // Uses the default provider chain: env vars, profile file, EC2/ECS role, etc.
             .credentialsProvider(DefaultCredentialsProvider.builder().build())
             .serviceConfiguration(S3Configuration.builder()
-                .pathStyleAccessEnabled(pathStyle)
+                .pathStyleAccessEnabled(this.s3ConfigurationProperties.pathStyle())
                 .build())
             .build();
     }

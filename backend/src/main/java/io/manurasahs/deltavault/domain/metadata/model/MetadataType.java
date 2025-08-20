@@ -1,9 +1,9 @@
-package io.manurasahs.deltavault.domain.metadata;
+package io.manurasahs.deltavault.domain.metadata.model;
 
 public enum MetadataType
 {
     DELTA(1),
-    FULL_FILE(2);
+    SNAPSHOT(2);
 
     private final int rank;
 

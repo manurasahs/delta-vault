@@ -6,10 +6,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import io.manurasahs.deltavault.application.MetadataService;
-import io.manurasahs.deltavault.domain.metadata.FileMetadata;
+import io.manurasahs.deltavault.domain.metadata.model.FileMetadata;
+import io.manurasahs.deltavault.domain.metadata.MetadataRepository;
 import jakarta.annotation.Nonnull;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
@@ -17,13 +17,13 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 
-@Service
-public class DynamoMetadataService implements MetadataService
+@Repository
+public class DynamoMetadataRepository implements MetadataRepository
 {
 
     private final DynamoDbTable<FileMetadata> fileMetadataTable;
 
-    public DynamoMetadataService(DynamoDbEnhancedClient enhancedClient)
+    public DynamoMetadataRepository(DynamoDbEnhancedClient enhancedClient)
     {
         this.fileMetadataTable = enhancedClient.table(
             "FileMetadata",
