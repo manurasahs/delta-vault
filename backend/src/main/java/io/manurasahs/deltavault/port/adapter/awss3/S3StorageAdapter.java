@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.ChecksumAlgorithm;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
@@ -69,5 +70,16 @@ public class S3StorageAdapter implements StorageAdapter
             RequestBody.fromBytes(objectContent)
         );
         return new UploadFileResponse(response.checksumSHA256(), fileKey);
+    }
+
+    @Override
+    public void deleteObjectFromStorage(@Nonnull String fileKey)
+    {
+        this.s3Client.deleteObject(
+            DeleteObjectRequest.builder()
+                .bucket(this.s3ConfigurationProperties.bucketName())
+                .key(fileKey)
+                .build()
+        );
     }
 }

@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import io.manurasahs.deltavault.domain.metadata.model.FileMetadata;
 import io.manurasahs.deltavault.domain.metadata.MetadataRepository;
+import io.manurasahs.deltavault.domain.metadata.model.FileMetadata;
 import jakarta.annotation.Nonnull;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
@@ -95,5 +95,24 @@ public class DynamoMetadataRepository implements MetadataRepository
         requireNonNull(fileMetadata);
 
         this.fileMetadataTable.putItem(fileMetadata);
+    }
+
+    @Override
+    public void deleteFileMetadata(@Nonnull FileMetadata fileMetadata)
+    {
+        this.fileMetadataTable.deleteItem(
+            Key.builder()
+                .partitionValue(fileMetadata.fileName())
+                .sortValue(fileMetadata.version())
+                .build()
+        );
+    }
+
+    @Override
+    public void updateFileMetadata(@Nonnull FileMetadata fileMetadata)
+    {
+        requireNonNull(fileMetadata);
+
+        this.fileMetadataTable.updateItem(fileMetadata);
     }
 }

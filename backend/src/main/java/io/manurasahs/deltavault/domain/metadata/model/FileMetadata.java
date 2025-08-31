@@ -18,7 +18,8 @@ public record FileMetadata(
     @Nonnull MetadataType type,
     @Nonnull String checksum,
     int fileSize,
-    int deltaSize
+    int deltaSize,
+    @Nonnull MetadataStatus status
 )
 {
 
@@ -37,7 +38,16 @@ public record FileMetadata(
         int fileSize
     )
     {
-        return new FileMetadata(fileName, 0, createdAt, MetadataType.SNAPSHOT, checksum, fileSize, fileSize);
+        return new FileMetadata(
+            fileName,
+            0,
+            createdAt,
+            MetadataType.SNAPSHOT,
+            checksum,
+            fileSize,
+            fileSize,
+            MetadataStatus.IN_PROGRESS
+        );
     }
 
     @DynamoDbIgnore
@@ -45,6 +55,22 @@ public record FileMetadata(
     public String fileKey()
     {
         return STR."\{fileName}/\{version}.json";
+    }
+
+    @DynamoDbIgnore
+    @Nonnull
+    public FileMetadata withStatus(@Nonnull MetadataStatus status)
+    {
+        return new FileMetadata(
+            this.fileName,
+            this.version,
+            this.createdAt,
+            this.type,
+            this.checksum,
+            this.fileSize,
+            this.deltaSize,
+            status
+        );
     }
 
     public FileMetadata(@Nonnull Builder builder)
@@ -56,7 +82,8 @@ public record FileMetadata(
             builder.type,
             builder.checksum,
             builder.fileSize,
-            builder.deltaSize
+            builder.deltaSize,
+            builder.status
         );
     }
 
@@ -81,6 +108,8 @@ public record FileMetadata(
         private int fileSize;
 
         private int deltaSize;
+
+        private MetadataStatus status;
 
         private Builder() {}
 
@@ -130,6 +159,13 @@ public record FileMetadata(
         public Builder deltaSize(int deltaSize)
         {
             this.deltaSize = deltaSize;
+            return this;
+        }
+
+        @Nonnull
+        public Builder status(@Nonnull MetadataStatus status)
+        {
+            this.status = status;
             return this;
         }
 

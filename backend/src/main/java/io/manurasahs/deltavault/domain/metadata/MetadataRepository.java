@@ -16,7 +16,11 @@ public interface MetadataRepository
     List<FileMetadata> getLastMetadataDeltas(@Nonnull FileMetadata lastFullFileMetadata);
 
     @Nonnull
-     Optional<FileMetadata> getLastFullFileMetadata(@Nonnull String fileName);
+    Optional<FileMetadata> getLastFullFileMetadata(@Nonnull String fileName);
 
     void createFileMetadata(@Nonnull FileMetadata fileMetadata);
+
+    void deleteFileMetadata(@Nonnull FileMetadata fileMetadata);
+
+    void updateFileMetadata(@Nonnull FileMetadata fileMetadata);
 }

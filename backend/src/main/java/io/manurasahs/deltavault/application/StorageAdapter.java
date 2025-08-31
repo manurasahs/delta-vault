@@ -11,4 +11,6 @@ public interface StorageAdapter
 
     @Nonnull
     UploadFileResponse uploadObjectToStorage(@Nonnull byte[] objectContent, @Nonnull String fileKey);
+
+    void deleteObjectFromStorage(@Nonnull String fileKey);
 }

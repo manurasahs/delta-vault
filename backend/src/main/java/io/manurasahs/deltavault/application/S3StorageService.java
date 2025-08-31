@@ -8,8 +8,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.manurasahs.deltavault.application.common.JsonMapper;
 import io.manurasahs.deltavault.application.common.exception.ObjectNotFoundException;
 import io.manurasahs.deltavault.application.common.exception.UploadIdenticalFileException;
+import io.manurasahs.deltavault.application.saga.SagaOrchestrator;
 import io.manurasahs.deltavault.domain.metadata.MetadataRepository;
 import io.manurasahs.deltavault.domain.metadata.model.FileMetadata;
+import io.manurasahs.deltavault.domain.metadata.model.MetadataStatus;
 import io.manurasahs.deltavault.domain.metadata.model.MetadataType;
 import jakarta.annotation.Nonnull;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -26,18 +28,22 @@ public class S3StorageService
 
     private final JsonMapper jsonMapper;
 
+    private final SagaOrchestrator sagaOrchestrator;
+
     private final int snapshotsFrequency;
 
     public S3StorageService(
         MetadataRepository metadataRepository,
         StorageAdapter storageAdapter,
         JsonMapper jsonMapper,
+        SagaOrchestrator sagaOrchestrator,
         @Value("${deltavault.snapshots-frequency}") int snapshotsFrequency
     )
     {
         this.metadataRepository = metadataRepository;
         this.storageAdapter = storageAdapter;
         this.jsonMapper = jsonMapper;
+        this.sagaOrchestrator = sagaOrchestrator;
         if (snapshotsFrequency <= 0)
         {
             throw new IllegalStateException("Invalid configuration: snapshot frequency must be greater than 0.");
@@ -99,7 +105,8 @@ public class S3StorageService
                     MetadataType.SNAPSHOT,
                     checksum,
                     fileContent.length,
-                    fileContent.length
+                    fileContent.length,
+                    MetadataStatus.IN_PROGRESS
                 )
             );
         } else
@@ -118,7 +125,8 @@ public class S3StorageService
                     MetadataType.DELTA,
                     checksum,
                     fileContent.length,
-                    diffBytes.length
+                    diffBytes.length,
+                    MetadataStatus.IN_PROGRESS
                 )
             );
         }
@@ -126,8 +134,9 @@ public class S3StorageService
 
     private void saveFileWithFileMetadata(@Nonnull byte[] fileContent, @Nonnull FileMetadata metadata)
     {
-        // todo think how to achieve data consistency
-        var checksum  = Base64.getEncoder().encodeToString(DigestUtils.sha256(fileContent));;
+        this.sagaOrchestrator.startSaga(metadata, fileContent);
+
+        var checksum = Base64.getEncoder().encodeToString(DigestUtils.sha256(fileContent));
         var response = this.storageAdapter.uploadObjectToStorage(fileContent, metadata.fileKey());
         if (!checksum.equals(response.checksum()))
         {
